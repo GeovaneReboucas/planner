@@ -2,6 +2,8 @@ package com.planner.planner.trip;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,7 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.planner.planner.participant.Participant;
+import com.planner.planner.participant.ParticipantCreateResponse;
+import com.planner.planner.participant.ParticipantData;
+import com.planner.planner.participant.ParticipantRequestPayload;
 import com.planner.planner.participant.ParticipantService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/trips")
@@ -66,4 +74,25 @@ public class TripController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/{id}/invite")
+    public ResponseEntity<ParticipantCreateResponse> inviteParticipant(@PathVariable UUID id, @RequestBody ParticipantRequestPayload payload){
+        Optional<Trip> trip = this.tripRepository.findById(id);
+        if(trip.isPresent()){
+            Trip rawTrip = trip.get();
+            ParticipantCreateResponse participantResponse = this.participantService.registerParticipantToEvent(payload.email(), rawTrip);
+            if(rawTrip.getIsConfirmed()){
+                this.participantService.triggerConfirmationEmailToParticipant(payload.email()); 
+            }
+            return ResponseEntity.ok(participantResponse);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<ParticipantData>> getAllParticipants(@PathVariable UUID id) {
+        List<ParticipantData> particilList = this.participantService.getAllParticipantsFromTrip(id);
+        return ResponseEntity.ok(particilList);
+    }
+    
 }   
