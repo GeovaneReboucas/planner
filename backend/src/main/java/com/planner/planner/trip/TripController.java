@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.planner.planner.activity.ActivityCreateResponse;
+import com.planner.planner.activity.ActivityData;
+import com.planner.planner.activity.ActivityRequestPayload;
+import com.planner.planner.activity.ActivityService;
 import com.planner.planner.participant.Participant;
 import com.planner.planner.participant.ParticipantCreateResponse;
 import com.planner.planner.participant.ParticipantData;
@@ -30,6 +34,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TripController {
     @Autowired
     private ParticipantService participantService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @Autowired
     private TripRepository tripRepository;
@@ -91,8 +98,24 @@ public class TripController {
 
     @GetMapping("/{id}/participants")
     public ResponseEntity<List<ParticipantData>> getAllParticipants(@PathVariable UUID id) {
-        List<ParticipantData> particilList = this.participantService.getAllParticipantsFromTrip(id);
-        return ResponseEntity.ok(particilList);
+        List<ParticipantData> participantList = this.participantService.getAllParticipantsFromTrip(id);
+        return ResponseEntity.ok(participantList);
     }
     
+    @PostMapping("/{id}/activities")
+    public ResponseEntity<ActivityCreateResponse> registerActivity(@PathVariable UUID id, @RequestBody ActivityRequestPayload payload){
+        Optional<Trip> trip = this.tripRepository.findById(id);
+        if(trip.isPresent()){
+            Trip rawTrip = trip.get();
+            ActivityCreateResponse activityResponse = this.activityService.registerActivity(payload, rawTrip);
+            return ResponseEntity.ok(activityResponse);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivityData>> getAllActivities(@PathVariable UUID id) {
+        List<ActivityData> activityList = this.activityService.getAllActivitiesFromTrip(id);
+        return ResponseEntity.ok(activityList);
+    }
 }   
