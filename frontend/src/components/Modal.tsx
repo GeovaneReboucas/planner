@@ -1,8 +1,9 @@
 import { X } from "lucide-react";
+import { ReactNode } from "react";
 
 interface ModalProps {
   title: String;
-  children: JSX.Element;
+  children: ReactNode;
   onClose: () => void;
 }
 
