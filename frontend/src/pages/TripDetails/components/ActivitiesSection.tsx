@@ -43,7 +43,6 @@ export function ActivitiesSection() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
 

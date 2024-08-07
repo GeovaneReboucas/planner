@@ -26,23 +26,25 @@ export function InviteGuestsModal({ emailsToInvite, setEmailsToInvite, onClose }
   }
 
   return (
-    <Modal title="Selecionar convidados" onClose={onClose}>
-      <p className="text-sm text-zinc-400 mt-2">
-        os convidados irão receber e-emails para confirmar a participação na viagem.
-      </p>
-
+    <Modal
+      title="Selecionar convidados"
+      subtitle="os convidados irão receber e-emails para confirmar a participação na viagem."
+      onClose={onClose}
+    >
       <div className="space-y-5">
         {/* Emails Render */}
-        <div className="flex flex-wrap gap-2">
-          {emailsToInvite.map((email, index) => (
-            <div className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2" key={index}>
-              <span className="text-zinc-300">{email}</span>
-              <button onClick={() => removeEmailFromInvite(email)}>
-                <X className="size-4 text-zinc-400" />
-              </button>
-            </div>
-          ))}
-        </div>
+        {!!emailsToInvite.length && (
+          <div className="flex flex-wrap gap-2">
+            {emailsToInvite.map((email, index) => (
+              <div className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2" key={index}>
+                <span className="text-zinc-300">{email}</span>
+                <button onClick={() => removeEmailFromInvite(email)}>
+                  <X className="size-4 text-zinc-400" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="w-full h-px bg-zinc-800" />
 
