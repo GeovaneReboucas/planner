@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import com.planner.planner.trip.Trip;
-import com.planner.planner.trip.TripRequestPayload;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.planner.planner.participant.ParticipantData;
 import com.planner.planner.trip.Trip;
 
 @Service
@@ -16,7 +15,7 @@ public class ActivityService {
     private ActivityRepository activityRepository;
 
     public ActivityCreateResponse registerActivity(ActivityRequestPayload payload, Trip trip) {
-        Activity newActivity = new Activity(payload.title(), payload.occurs_at(), trip);
+        Activity newActivity = new Activity(payload.title(), payload.occursAt(), trip);
         this.activityRepository.save(newActivity);
         return new ActivityCreateResponse(newActivity.getId());
     }
