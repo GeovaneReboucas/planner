@@ -9,3 +9,10 @@
 input {
   color-scheme: dark;
 }
+
+/* react-day-picker style */
+.rdp-root {
+  --rdp-accent-color: #a3e635; /* Change the accent color to indigo. */
+  --rdp-accent-background-color: #71717A; /* Change the accent background color. */
+}
+

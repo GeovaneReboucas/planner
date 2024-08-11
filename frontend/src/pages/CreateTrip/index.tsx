@@ -4,11 +4,17 @@ import { InviteGuestsModal } from "./components/InviteGuestsModal";
 import { CreateTripModal } from "./components/CreateTripModal";
 import { DestinationAndDateStep } from "../../components/DestinationAndDateStep";
 import { InviteGuestsStep } from "./components/InviteGuestsStep";
+import { DateRange } from "react-day-picker";
+import { api } from "../../services/axios";
 
 export function CreateTripPage() {
   const [isGuestsInputOpen, setIsGuestsInputOpen] = useState(false);
   const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false);
   const [isConfirmTripModalOpen, setIsConfirmTripModalOpen] = useState(false);
+
+  const [destination, setDestination] = useState('');
+  const [eventStartAndEndDates, setEventStartAndEndDates] = useState<DateRange | undefined>();
+
   const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
 
   const navigate = useNavigate();
@@ -25,9 +31,32 @@ export function CreateTripPage() {
     setIsConfirmTripModalOpen(prevState => !prevState);
   }
 
-  function createTrip(e: FormEvent<HTMLFormElement>) {
+  async function createTrip(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    navigate('/trips/123');
+    const data = new FormData(e.currentTarget);
+    const ownerEmail = data.get('ownerEmail')?.toString();
+    const ownerName = data.get('ownerName')?.toString();
+
+    if (
+      !ownerEmail ||
+      !ownerName ||
+      !destination ||
+      !emailsToInvite.length ||
+      !eventStartAndEndDates?.to  ||
+      !eventStartAndEndDates?.from
+    ) return;
+
+    const trip = {
+      ownerEmail: ownerEmail,
+      ownerName: ownerName,
+      destination,
+      emailsToInvite: emailsToInvite,
+      startsAt: eventStartAndEndDates.from,
+      endsAt: eventStartAndEndDates.to
+    };
+    const response = await api.post('/trips', trip);
+    const { tripId } = response.data;
+    navigate(`/trips/${tripId}`);
   }
 
   return (
@@ -39,7 +68,16 @@ export function CreateTripPage() {
         </div>
 
         <div className="space-y-4">
-          <DestinationAndDateStep isGuestsInputOpen={isGuestsInputOpen} onClick={toggleGuestsInput} />
+          <DestinationAndDateStep
+            destination={destination}
+            eventStartAndEndDates={eventStartAndEndDates}
+            closeInputs={isGuestsInputOpen}
+            onClick={toggleGuestsInput}
+            onInputsChange={({ destination, eventStartAndEndDates }) => {
+              setDestination(destination);
+              setEventStartAndEndDates(eventStartAndEndDates);
+            }}
+          />
 
           {isGuestsInputOpen && (
             <InviteGuestsStep
@@ -68,7 +106,7 @@ export function CreateTripPage() {
       {/* Confirm Trip Modal */}
       {isConfirmTripModalOpen && (
         <CreateTripModal
-          createTrip={createTrip}
+          onCreateTrip={createTrip}
           onClose={toggleConfirmTripModal}
         />
       )}

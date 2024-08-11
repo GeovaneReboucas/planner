@@ -5,11 +5,11 @@ import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
 
 interface CreateTripModalInterface {
-  createTrip: (e: FormEvent<HTMLFormElement>) => void;
+  onCreateTrip: (e: FormEvent<HTMLFormElement>) => void;
   onClose: () => void;
 }
 
-export function CreateTripModal({ createTrip, onClose }: CreateTripModalInterface) {
+export function CreateTripModal({ onCreateTrip, onClose }: CreateTripModalInterface) {
   return (
     <Modal
       title="Confirmar criação de viagem"
@@ -22,17 +22,17 @@ export function CreateTripModal({ createTrip, onClose }: CreateTripModalInterfac
     >
       <form
         className="space-y-2"
-        onSubmit={createTrip}
+        onSubmit={onCreateTrip}
       >
         <Input
-          name="name"
+          name="ownerName"
           placeholder="Seu nome completo"
           icon={User}
         />
 
         <Input
           type="email"
-          name="email"
+          name="ownerEmail"
           placeholder="Seu e-mail pessoal"
           icon={Mail}
         />
