@@ -20,6 +20,10 @@ public class ActivityService {
         return new ActivityCreateResponse(newActivity.getId());
     }
 
+    // public List<Activity> getAllActivitiesFromTrip(UUID tripId) {
+    //     return this.activityRepository.findByTripId(tripId);
+    // }
+
     public List<ActivityData> getAllActivitiesFromTrip(UUID tripId) {
         return this.activityRepository.findByTripId(tripId)
                 .stream()

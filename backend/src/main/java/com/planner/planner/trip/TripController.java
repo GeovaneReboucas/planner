@@ -3,8 +3,10 @@ package com.planner.planner.trip;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.planner.planner.activity.ActivityCreateResponse;
 import com.planner.planner.activity.ActivityData;
+import com.planner.planner.activity.ActivityPlanning;
 import com.planner.planner.activity.ActivityRequestPayload;
 import com.planner.planner.activity.ActivityService;
 import com.planner.planner.link.LinkCreateResponse;
@@ -117,9 +120,22 @@ public class TripController {
     }
 
     @GetMapping("/{id}/activities")
-    public ResponseEntity<List<ActivityData>> getAllActivities(@PathVariable UUID id) {
+    public ResponseEntity<List<ActivityPlanning>> getAllActivities(@PathVariable UUID id) {
+        Optional<Trip> trip = this.tripRepository.findById(id);
+        if (!trip.isPresent()) return ResponseEntity.notFound().build();
+    
         List<ActivityData> activityList = this.activityService.getAllActivitiesFromTrip(id);
-        return ResponseEntity.ok(activityList);
+    
+        // Agrupar as atividades por dia
+        Map<LocalDateTime, List<ActivityData>> groupedActivities = activityList.stream()
+            .collect(Collectors.groupingBy(activity -> activity.occursAt().toLocalDate().atStartOfDay()));
+    
+        // Transformar o map em uma lista de ActivityPlanning
+        List<ActivityPlanning> activityPlanning = groupedActivities.entrySet().stream()
+            .map(entry -> new ActivityPlanning(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+    
+        return ResponseEntity.ok(activityPlanning);
     }
 
     @PostMapping("/{id}/links")
