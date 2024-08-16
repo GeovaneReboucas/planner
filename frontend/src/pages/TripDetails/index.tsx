@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { api } from "../../services/axios";
-import { Link, Participant, Trip } from "../../types";
+import { ActivityPlanning, Link, Participant, Trip } from "../../types";
 
 import { DestinationAndDateStep } from "../../components/DestinationAndDateStep";
 import { LinksSection } from "./components/LinksSection";
@@ -16,6 +16,7 @@ export function TripDetailsPage() {
   const [trip, setTrip] = useState<Trip>();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [links, setLinks] = useState<Link[]>([]);
+  const [activitiesPlanning, setActivitiesPlanning] = useState<ActivityPlanning[]>([]);
 
   useEffect(() => {
     loadData();
@@ -36,12 +37,18 @@ export function TripDetailsPage() {
     if (data) setLinks(data);
   }
 
+  async function findActivitiesByTrip() {
+    const { data } = await api.get(`trips/${tripId}/activities`);
+    if (data) setActivitiesPlanning(data);
+  }
+
   async function loadData() {
     setIsLoading(true);
     if(!tripId) return;
     await findTripById();
     await findParticipantsByTrip();
     await findLinksByTrip();
+    await findActivitiesByTrip();
     setIsLoading(false);
   }
 
@@ -59,12 +66,14 @@ export function TripDetailsPage() {
         />
 
         <main className="flex gap-16 px-6">
-          <ActivitiesSection />
+          <ActivitiesSection
+            activitiesPlanning={activitiesPlanning}
+            findActivitiesByTrip={findActivitiesByTrip}
+          />
 
           <div className="w-80 space-y-6">
             <LinksSection
               links={links}
-              tripId={tripId!}
               findLinksByTrip={findLinksByTrip}
             />
             <div className="w-full h-px bg-zinc-800" />

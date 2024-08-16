@@ -1,5 +1,6 @@
-import { Captions, Link as Link1, Link2, Plus } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { Captions, Link as Link1, Link2, Plus } from "lucide-react";
 
 import { Link } from "../../../types";
 
@@ -10,11 +11,11 @@ import { api } from "../../../services/axios";
 
 interface LinksSectionProps {
   links: Link[];
-  tripId: string;
   findLinksByTrip: () => Promise<void>;
 }
 
-export function LinksSection({ links, tripId, findLinksByTrip }: LinksSectionProps) {
+export function LinksSection({ links, findLinksByTrip }: LinksSectionProps) {
+  const { tripId } = useParams();
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
