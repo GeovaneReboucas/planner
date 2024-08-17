@@ -2,6 +2,7 @@ package com.planner.planner.trip;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -124,16 +125,24 @@ public class TripController {
         Optional<Trip> trip = this.tripRepository.findById(id);
         if (!trip.isPresent()) return ResponseEntity.notFound().build();
     
-        List<ActivityData> activityList = this.activityService.getAllActivitiesFromTrip(id);
+        List<ActivityData> activityList = this.activityService.getAllActivitiesFromTrip(id)
+            .stream()
+            .sorted(Comparator.comparing(ActivityData::occursAt))
+            .toList();
     
         // Agrupar as atividades por dia
         Map<LocalDateTime, List<ActivityData>> groupedActivities = activityList.stream()
             .collect(Collectors.groupingBy(activity -> activity.occursAt().toLocalDate().atStartOfDay()));
     
         // Transformar o map em uma lista de ActivityPlanning
-        List<ActivityPlanning> activityPlanning = groupedActivities.entrySet().stream()
+        List<ActivityPlanning> activityPlanning = groupedActivities
+            .entrySet()
+            .stream()
             .map(entry -> new ActivityPlanning(entry.getKey(), entry.getValue()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toList())
+            .reversed();
+
+        activityPlanning.sort(Comparator.comparing(ActivityPlanning::date));
     
         return ResponseEntity.ok(activityPlanning);
     }
