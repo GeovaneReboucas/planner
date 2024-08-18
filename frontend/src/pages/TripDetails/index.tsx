@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { api } from "../../services/axios";
+import { tripService } from "../../services/TripService";
 import { ActivityPlanning, Link, Participant, Trip } from "../../types";
 
 import { DestinationAndDateStep } from "../../components/DestinationAndDateStep";
@@ -23,22 +23,22 @@ export function TripDetailsPage() {
   }, [tripId]);
 
   async function findTripById() {
-    const { data } = await api.get(`trips/${tripId}`);
+    const data = await tripService.findTripById(tripId!);
     if (data) setTrip(data);
   }
 
   async function findParticipantsByTrip() {
-    const { data } = await api.get(`trips/${tripId}/participants`);
+    const data = await tripService.findParticipantsByTrip(tripId!);
     if (data) setParticipants(data);
   }
 
   async function findLinksByTrip() {
-    const { data } = await api.get(`trips/${tripId}/links`);
+    const data = await tripService.findLinksByTrip(tripId!);
     if (data) setLinks(data);
   }
 
   async function findActivitiesByTrip() {
-    const { data } = await api.get(`trips/${tripId}/activities`);
+    const data = await tripService.findActivitiesByTrip(tripId!);
     if (data) setActivitiesPlanning(data);
   }
 

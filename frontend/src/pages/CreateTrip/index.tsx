@@ -1,11 +1,14 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DateRange } from "react-day-picker";
+
+import { tripService } from "../../services/TripService";
+import { TripCreateResponse } from "../../types";
+
 import { InviteGuestsModal } from "./components/InviteGuestsModal";
 import { CreateTripModal } from "./components/CreateTripModal";
 import { DestinationAndDateStep } from "../../components/DestinationAndDateStep";
 import { InviteGuestsStep } from "./components/InviteGuestsStep";
-import { DateRange } from "react-day-picker";
-import { api } from "../../services/axios";
 
 export function CreateTripPage() {
   const [isGuestsInputOpen, setIsGuestsInputOpen] = useState(false);
@@ -54,8 +57,7 @@ export function CreateTripPage() {
       startsAt: eventStartAndEndDates.from,
       endsAt: eventStartAndEndDates.to
     };
-    const response = await api.post('/trips', trip);
-    const { tripId } = response.data;
+    const { tripId } = await tripService.post<TripCreateResponse>(trip);
     navigate(`/trips/${tripId}`);
   }
 

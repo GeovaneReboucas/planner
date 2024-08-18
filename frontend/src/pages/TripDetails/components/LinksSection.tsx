@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Captions, Link as Link1, Link2, Plus } from "lucide-react";
 
+import { tripService } from "../../../services/TripService";
 import { Link } from "../../../types";
 
 import { Button } from "../../../components/Button";
 import { Modal } from "../../../components/Modal";
 import { Input } from "../../../components/Input";
-import { api } from "../../../services/axios";
 
 interface LinksSectionProps {
   links: Link[];
@@ -27,10 +27,7 @@ export function LinksSection({ links, findLinksByTrip }: LinksSectionProps) {
 
   async function onCreateLink() {
     setIsLoadingCreateLink(true);
-    await api.post(`trips/${tripId}/links`, {
-      title,
-      url,
-    });
+    await tripService.createLink(tripId!, {title, url})
     await findLinksByTrip();
     toggleLinkModalOpen();
     setIsLoadingCreateLink(false);

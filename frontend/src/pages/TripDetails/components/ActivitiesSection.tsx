@@ -5,7 +5,7 @@ import { format, isBefore, startOfDay } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import classNames from "classnames";
 
-import { api } from "../../../services/axios";
+import { tripService } from "../../../services/TripService";
 import { ActivityPlanning } from "../../../types";
 
 import { Button } from "../../../components/Button";
@@ -30,11 +30,9 @@ export function ActivitiesSection({ activitiesPlanning, findActivitiesByTrip }: 
     const data = new FormData(e.currentTarget);
     const title = data.get('title')?.toString();
     const occursAt = data.get('occursAt')?.toString();
+    if(!title || !occursAt || !tripId) return;
 
-    await api.post(`trips/${tripId}/activities`, {
-      title,
-      occursAt
-    });
+    await tripService.createActivity(tripId, { title, occursAt });
     await findActivitiesByTrip();
     toggleIsActivityModalOpen();
   }
